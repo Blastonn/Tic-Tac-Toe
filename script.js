@@ -34,7 +34,17 @@ const controleDisplay = (function (){
     return {definirJogadores,definirPosicao,getPlayers};
 })();
 
+const controleJogo = (function () {
+    let jogadorAtual;
+    let players;
+    const iniciarJogo = () =>{
+        controleDisplay.definirJogadores();
+        players = controleDisplay.getPlayers();
+        jogadorAtual = players.player1;
+    }
+    return {iniciarJogo};
+})();
 
-controleDisplay.definirJogadores();
-controleDisplay.definirPosicao();
-controleDisplay.getPlayers();
+
+
+controleJogo.iniciarJogo();
