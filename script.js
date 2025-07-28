@@ -44,12 +44,22 @@ const controleJogo = (function () {
         jogadorAtual = players.player1;
         return jogadorAtual;
     }
+    const turnoJogo = () =>{
+        
+    }
+
+    const trocarJogador = () =>{
+        let players = controleDisplay.getPlayers();
+        jogadorAtual = jogadorAtual === players.player2 ? players.player1 :
+        players.player2;
+        console.log(jogadorAtual);
+    }
+
     const getJogadorAtual = () =>{
         return {jogadorAtual};
     }
-    return {iniciarJogo,getJogadorAtual};
+    return {iniciarJogo,getJogadorAtual,trocarJogador};
 })();
-
 
 
 controleJogo.iniciarJogo();
