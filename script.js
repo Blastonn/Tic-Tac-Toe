@@ -40,9 +40,14 @@ const controleJogo = (function () {
     const iniciarJogo = () =>{
         controleDisplay.definirJogadores();
         players = controleDisplay.getPlayers();
+        console.log("Players definidos:", players);
         jogadorAtual = players.player1;
+        return jogadorAtual;
     }
-    return {iniciarJogo};
+    const getJogadorAtual = () =>{
+        return {jogadorAtual};
+    }
+    return {iniciarJogo,getJogadorAtual};
 })();
 
 
