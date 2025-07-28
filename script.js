@@ -1,14 +1,10 @@
-function gameboard(){
-   const posicao = [0,1,2,3,4,5,6,7,8,9];
-        return{
-            tabuleiro: posicao,
-            getIndice: (indice) => posicao[indice]
-        };
-}
+const gameboard = (function (){
+    const posicao = [0,1,2,3,4,5,6,7,8,9];
+    const getIndice = (indice) => posicao[indice];
+    return {getIndice};
+})();
 
-const escolherPos = gameboard();
-
-console.log(escolherPos.getIndice());
+console.log(gameboard.getIndice(2));
 
 function createPlayer(nome, time){
     const player = "Jogador:" + nome;
