@@ -1,11 +1,17 @@
 const gameboard = (function (){
-    const posicao = Array(10).fill("");;
+    const posicao = Array(9).fill("");;
     const getIndice = (indice) => posicao[indice];
     const setIndice = (indice, time) => posicao[indice] = time;
     const mostrarPosicoes = () => {
         return {posicao};
     }
-    return {getIndice,setIndice,mostrarPosicoes};
+    const tamanhoArrayVazio = () => {
+        return posicao.filter(el => el === "").length;
+    }
+    const tamanhoArrayPreenchido = () =>{
+        return posicao.filter(el => el !== "").length;
+    }
+    return {getIndice,setIndice,mostrarPosicoes,tamanhoArrayVazio,tamanhoArrayPreenchido};
 })();
 
 console.log(gameboard.getIndice(2));
@@ -14,7 +20,6 @@ function createPlayer(nome, time){
     const player = "Jogador:" + nome;
     return {player, time};
 }
-
 
 const controleDisplay = (function (){
     let player1,player2;
@@ -31,10 +36,13 @@ const controleDisplay = (function (){
     const definirPosicao = () =>{
         const posicao = Number(prompt("Digite a posição(0 a 10):"));
         console.log("Posição digitada:", posicao);
-        const posicaoEsc = gameboard.getIndice(posicao);
-        console.log("Valor no tabuleiro:", posicaoEsc);
-        
-        return posicao;
+        const valor = gameboard.getIndice(posicao);
+        if(valor !== ""){
+            console.log("posicao ja preenchida");
+        }else{
+            return posicao;
+
+        }
     }
 
     return {definirJogadores,definirPosicao,getPlayers};
@@ -51,11 +59,19 @@ const controleJogo = (function () {
         return jogadorAtual;
     }
     const turnoJogo = () =>{
+        trocarJogador();
         const posicao = controleDisplay.definirPosicao();
         gameboard.setIndice(posicao,getJogadorAtual().jogadorAtual.time);
         console.log(gameboard.mostrarPosicoes());
-        trocarJogador();
-        console.log(getJogadorAtual().jogadorAtual.player);
+        console.log(`Proximo${getJogadorAtual().jogadorAtual.player}`);
+    }
+
+    const novoTurno = () =>{
+       let turnos =  0;
+       while(turnos < 9){
+        turnoJogo();
+        turnos++;
+       }
     }
 
     const trocarJogador = () =>{
@@ -67,9 +83,9 @@ const controleJogo = (function () {
     const getJogadorAtual = () =>{
         return {jogadorAtual};
     }
-    return {iniciarJogo,getJogadorAtual,trocarJogador,turnoJogo};
+    return {iniciarJogo,novoTurno};
 })();
 
 
 controleJogo.iniciarJogo();
-controleJogo.turnoJogo();
+controleJogo.novoTurno();
