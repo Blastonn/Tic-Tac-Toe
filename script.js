@@ -1,8 +1,11 @@
 const gameboard = (function (){
-    const posicao = [0,1,2,3,4,5,6,7,8,9];
+    const posicao = Array(10).fill("");;
     const getIndice = (indice) => posicao[indice];
     const setIndice = (indice, time) => posicao[indice] = time;
-    return {getIndice};
+    const mostrarPosicoes = () => {
+        return {posicao};
+    }
+    return {getIndice,setIndice,mostrarPosicoes};
 })();
 
 console.log(gameboard.getIndice(2));
@@ -26,11 +29,14 @@ const controleDisplay = (function (){
         return {player1, player2};
     }
     const definirPosicao = () =>{
-        const posicao = prompt("Digite a posicao: ");
+        const posicao = Number(prompt("Digite a posição(0 a 10):"));
+        console.log("Posição digitada:", posicao);
         const posicaoEsc = gameboard.getIndice(posicao);
-        console.log(posicaoEsc);
-        return posicaoEsc;
+        console.log("Valor no tabuleiro:", posicaoEsc);
+        
+        return posicao;
     }
+
     return {definirJogadores,definirPosicao,getPlayers};
 })();
 
@@ -45,21 +51,25 @@ const controleJogo = (function () {
         return jogadorAtual;
     }
     const turnoJogo = () =>{
-        
+        const posicao = controleDisplay.definirPosicao();
+        gameboard.setIndice(posicao,getJogadorAtual().jogadorAtual.time);
+        console.log(gameboard.mostrarPosicoes());
+        trocarJogador();
+        console.log(getJogadorAtual().jogadorAtual.player);
     }
 
     const trocarJogador = () =>{
         let players = controleDisplay.getPlayers();
-        jogadorAtual = jogadorAtual === players.player2 ? players.player1 :
+        return jogadorAtual = jogadorAtual === players.player2 ? players.player1 :
         players.player2;
-        console.log(jogadorAtual);
     }
 
     const getJogadorAtual = () =>{
         return {jogadorAtual};
     }
-    return {iniciarJogo,getJogadorAtual,trocarJogador};
+    return {iniciarJogo,getJogadorAtual,trocarJogador,turnoJogo};
 })();
 
 
 controleJogo.iniciarJogo();
+controleJogo.turnoJogo();
