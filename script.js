@@ -65,23 +65,38 @@ const controleJogo = (function () {
         }
         gameboard.setIndice(posicao,getJogadorAtual().jogadorAtual.time);
         console.log(gameboard.mostrarPosicoes().posicao);
+        if (checarVitoria()) {
+            return true; 
+        }
         trocarJogador();
         console.log(`Proximo ${getJogadorAtual().jogadorAtual.player}`);
+        return false;
     }
 
-
-
-
+    const checarVitoria = () =>{
+        const pos = gameboard.mostrarPosicoes().posicao;
+        const time = getJogadorAtual().jogadorAtual.time;
+        const jogador = getJogadorAtual().jogadorAtual;
+        if(gameboard.tamanhoArrayPreenchido() === gameboard.tamanhoArray()){
+            console.log("Empate.")
+            return true;
+        }
+        
+        if(pos[0] === time && pos[1] === time && pos[2] === time){
+            console.log(`${jogador.player} ganhou`);
+            return true;
+        }
+        return false;
+    }
     const novoTurno = () =>{
        let turnos =  0;
-       while(turnos < 9){
-        turnoJogo();
-        turnos++;
+       while(true){
+        if(turnoJogo()){
+            break;
+        }
+        turnos++;   
     }
-
-
 }
-
     const trocarJogador = () =>{
         let players = controleDisplay.getPlayers();
         return jogadorAtual = jogadorAtual === players.player2 ? players.player1 :
