@@ -1,9 +1,12 @@
 const gameboard = (function (){
-    const posicao = Array(9).fill("");;
+    const posicao = Array(9).fill("");
     const getIndice = (indice) => posicao[indice];
     const setIndice = (indice, time) => posicao[indice] = time;
     const mostrarPosicoes = () => {
         return {posicao};
+    }
+    const tamanhoArray = () =>{
+        return posicao.length;
     }
     const tamanhoArrayVazio = () => {
         return posicao.filter(el => el === "").length;
@@ -11,7 +14,7 @@ const gameboard = (function (){
     const tamanhoArrayPreenchido = () =>{
         return posicao.filter(el => el !== "").length;
     }
-    return {getIndice,setIndice,mostrarPosicoes,tamanhoArrayVazio,tamanhoArrayPreenchido};
+    return {getIndice,setIndice,mostrarPosicoes,tamanhoArrayVazio,tamanhoArrayPreenchido,tamanhoArray};
 })();
 
 console.log(gameboard.getIndice(2));
@@ -34,15 +37,10 @@ const controleDisplay = (function (){
         return {player1, player2};
     }
     const definirPosicao = () =>{
-        const posicao = Number(prompt("Digite a posição(0 a 10):"));
-        console.log("Posição digitada:", posicao);
-        const valor = gameboard.getIndice(posicao);
-        if(valor !== ""){
-            console.log("posicao ja preenchida");
-        }else{
-            return posicao;
+        let posicao = Number(prompt("Digite a posição(0 a 10):"));
 
-        }
+        console.log("Posição digitada:", posicao);
+        return posicao;
     }
 
     return {definirJogadores,definirPosicao,getPlayers};
@@ -59,20 +57,30 @@ const controleJogo = (function () {
         return jogadorAtual;
     }
     const turnoJogo = () =>{
-        trocarJogador();
         const posicao = controleDisplay.definirPosicao();
+        if (posicao < 0 || posicao >= gameboard.tamanhoArray() || gameboard.getIndice(posicao) !== "") {
+            console.log("Digite uma posição válida e vazia.");
+            console.log(gameboard.mostrarPosicoes().posicao);
+            return turnoJogo();
+        }
         gameboard.setIndice(posicao,getJogadorAtual().jogadorAtual.time);
-        console.log(gameboard.mostrarPosicoes());
-        console.log(`Proximo${getJogadorAtual().jogadorAtual.player}`);
+        console.log(gameboard.mostrarPosicoes().posicao);
+        trocarJogador();
+        console.log(`Proximo ${getJogadorAtual().jogadorAtual.player}`);
     }
+
+
+
 
     const novoTurno = () =>{
        let turnos =  0;
        while(turnos < 9){
         turnoJogo();
         turnos++;
-       }
     }
+
+
+}
 
     const trocarJogador = () =>{
         let players = controleDisplay.getPlayers();
