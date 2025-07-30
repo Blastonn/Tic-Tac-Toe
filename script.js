@@ -81,19 +81,18 @@ const controleJogo = (function () {
             console.log("Empate.")
             return true;
         }
-        
-        if(pos[0] === time && pos[1] === time && pos[2] === time
-        || pos[3] === time && pos[4] === time && pos[5] === time
-        || pos[6] === time && pos[7] === time && pos[8] === time
-        || pos[0] === time && pos[4] === time && pos[8] === time
-        || pos[2] === time && pos[4] === time && pos[6] === time
-        || pos[0] === time && pos[3] === time && pos[6] === time
-        || pos[1] === time && pos[4] === time && pos[7] === time
-        || pos[2] === time && pos[5] === time && pos[8] === time
-        ){
-            console.log(`${jogador.player} ganhou`);
-            return true;
-        }
+        const combinacoes = [
+            [0,1,2], [3,4,5], [6,7,8], 
+            [0,3,6], [1,4,7], [2,5,8], 
+            [0,4,8], [2,4,6]           
+          ];
+          
+          for (const [a, b, c] of combinacoes) {
+            if (pos[a] === time && pos[b] === time && pos[c] === time) {
+              console.log(`${jogador.player} ganhou`);
+              return true;
+            }
+          }
         return false;
     }
     const novoTurno = () =>{
