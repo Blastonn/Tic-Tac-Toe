@@ -32,8 +32,8 @@ const controleDisplay = (function (){
     const getPlayers = () =>{
         return {player1, player2};
     }
-    const definirPosicao = () =>{
-        let posicao = Number(prompt("Digite a posição(0 a 10):"));
+    const definirPosicao = (posicao) =>{
+        // let posicao = Number(prompt("Digite a posição(0 a 10):"));
 
         console.log("Posição digitada:", posicao);
         return posicao;
@@ -49,21 +49,21 @@ const controleJogo = (function () {
         players = controleDisplay.getPlayers();
         console.log("Players definidos:", players);
         jogadorAtual = players.player1;
-        return jogadorAtual,novoTurno();
+        return jogadorAtual;
     }
-    const turnoJogo = () =>{
-        const posicao = controleDisplay.definirPosicao();
+    const turnoJogo = (posicao) =>{
+        posicao = controleDisplay.definirPosicao(posicao);
         if (posicao < 0 || posicao >= gameboard.tamanhoArray() || gameboard.getIndice(posicao) !== "") {
             console.log("Digite uma posição válida e vazia.");
             console.log(gameboard.mostrarPosicoes().posicao);
-            return turnoJogo();
+            return;
         }
         gameboard.setIndice(posicao,getJogadorAtual().jogadorAtual.time);
         console.log(gameboard.mostrarPosicoes().posicao);
         if (checarVitoria()) {
+            encerrarJogo();
             return true; 
         }
-        trocarJogador();
         console.log(`Proximo ${getJogadorAtual().jogadorAtual.player}`);
         return false;
     }
@@ -90,15 +90,15 @@ const controleJogo = (function () {
           }
         return false;
     }
-    const novoTurno = () =>{
-       let turnos =  0;
-       while(true){
-        if(turnoJogo()){
-            break;
-        }
-        turnos++;   
-    }
-}
+//     const novoTurno = () =>{
+//        let turnos =  0;
+//        while(turnos <= gameboard.tamanhoArray()){
+//         if(turnoJogo()){
+//             break;
+//         }
+//         turnos++;   
+//     }
+// }
     const trocarJogador = () =>{
         let players = controleDisplay.getPlayers();
         return jogadorAtual = jogadorAtual === players.player2 ? players.player1 :
@@ -108,34 +108,81 @@ const controleJogo = (function () {
     const getJogadorAtual = () =>{
         return {jogadorAtual};
     }
-    return {iniciarJogo,novoTurno,getJogadorAtual};
+
+    const encerrarJogo = () =>{
+        const botoes = document.querySelectorAll(".tab");
+        botoes.forEach(btn => {
+          btn.disabled = true;
+        });
+    }
+
+    return {iniciarJogo,getJogadorAtual,trocarJogador,turnoJogo};
 })();
 
-function controleTela() {
+const controleTela = (function () {
     const game = controleJogo;
-
 
     const formjogador = document.querySelector(".form-jogador");
     const displayTurno = document.querySelector(".display-prin");
-    const submitButton = document.querySelector(".button");
+    const submitButton = document.querySelector(".buttonS");
+    const tabuleiro = document.querySelectorAll(".cell");
 
+    const configurarListeners = () => {
+        formjogador.addEventListener("submit", handleSubmit);
+    };
 
-    formjogador.addEventListener("submit",(e) =>{
+    const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData(formjogador);
 
         const player1 = formData.get("player1");
         const player2 = formData.get("player2");
-        console.log(player1);
-        controleDisplay.definirJogadores(player1,player2);
 
+        controleDisplay.definirJogadores(player1, player2);
         displayTurno.textContent = `${player1} X ${player2}`;
         submitButton.textContent = "REINICIAR";
+        submitButton.classList.add = "reinicio";
+
+        criarBotoesTabuleiro();
         game.iniciarJogo();
 
         formjogador.reset();
-    });
-};
+    };
 
-controleTela();
+    const criarBotoesTabuleiro = () => {
+        tabuleiro.forEach((cell, index) => {
+            cell.innerHTML = ""; 
+            const botao = document.createElement("button");
+            botao.classList.add("tab");
+            botao.dataset.indice = index;
+            botao.addEventListener("click", handleClickCelula);
+            cell.appendChild(botao);
+        });
+    };
 
+    const reiniciar = () =>{
+        const restartButton = document.querySelector(".reinicio");
+        restartButton.addEventListener("click", (){
+
+        });
+    }
+
+    const handleClickCelula = (e) => {
+        const btn = e.target;
+        const indice = btn.dataset.indice;
+        const jogadorAtual = controleJogo.getJogadorAtual().jogadorAtual.player;
+        displayTurno.textContent = `Vez do ${jogadorAtual}`;
+
+        console.log(indice);
+        controleJogo.turnoJogo(indice);
+        btn.textContent = game.getJogadorAtual().jogadorAtual.time; 
+        controleJogo.trocarJogador();
+
+    };
+
+    return {
+        iniciar: configurarListeners
+    };
+})();
+
+controleTela.iniciar();

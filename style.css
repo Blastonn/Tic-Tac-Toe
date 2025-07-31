@@ -62,6 +62,16 @@
     background-color: white;
 }
 
+.tab{
+    width: 145px;
+    height: 140px;
+    background-color: black;
+    border: none;
+    color:white;
+    font-size: 100px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
 .cell {
     background-color: black;
   }
