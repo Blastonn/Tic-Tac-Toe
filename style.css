@@ -17,6 +17,7 @@
     grid-template-columns: 1fr;
     grid-template-rows: 0.2fr 1fr;
     justify-items: center;
+    gap: 30px;
   }
   img, picture, video, canvas, svg {
     display: block;
@@ -65,10 +66,59 @@
     background-color: black;
   }
 
-
+.display{
+    display: grid;
+    width: 600px;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2,1fr);
+    align-items: center;
+    justify-items: center;
+    color: white;
+    gap: 5px;
+}
 
 p{
-    color: white;
     grid-row: 1;
+    grid-column: 1;
+    font-family: 'Courier New', Courier, monospace;
+
+}
+form{
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-column: 1/3;
+    width: 600px;
+    font-weight: bolder;
+    font-family: 'Courier New', Courier, monospace;
+    grid-row: 2;
+    justify-items: center;
     align-items: center;
+}
+
+.coluna1{
+    display: grid;
+    justify-items: center;
+    grid-column: 1;
+    grid-row: 2;
+}
+.coluna2{
+    display: grid;
+    justify-items: center;
+    grid-column: 3;
+    grid-row: 2;
+}
+
+input{
+    background-color: white;
+    border: 1px solid white;
+    border-radius: 5px;
+}
+button{
+    grid-column: 2;
+    grid-row: 2;
+    width: 100px;
+    height: 30px;
+    border-radius: 5px;
+
+    background-color: white;
 }
