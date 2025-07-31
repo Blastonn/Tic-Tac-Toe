@@ -17,8 +17,6 @@ const gameboard = (function (){
     return {getIndice,setIndice,mostrarPosicoes,tamanhoArrayVazio,tamanhoArrayPreenchido,tamanhoArray};
 })();
 
-console.log(gameboard.getIndice(2));
-
 function createPlayer(nome, time){
     const player = "Jogador:" + nome;
     return {player, time};
@@ -117,5 +115,5 @@ const controleJogo = (function () {
 })();
 
 
-controleJogo.iniciarJogo();
-controleJogo.novoTurno();
+// controleJogo.iniciarJogo();
+// controleJogo.novoTurno();
