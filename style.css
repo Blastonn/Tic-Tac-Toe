@@ -68,13 +68,12 @@
 
 .display{
     display: grid;
-    width: 600px;
+    width: 800px;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(2,1fr);
+    grid-template-rows: 0.8fr 1fr;
     align-items: center;
     justify-items: center;
     color: white;
-    gap: 5px;
 }
 
 p{
@@ -87,7 +86,7 @@ form{
     display: grid;
     grid-template-columns: repeat(3,1fr);
     grid-column: 1/3;
-    width: 600px;
+    width: 800px;
     font-weight: bolder;
     font-family: 'Courier New', Courier, monospace;
     grid-row: 2;
@@ -119,6 +118,8 @@ button{
     width: 100px;
     height: 30px;
     border-radius: 5px;
-
     background-color: white;
+}
+.display-prin{
+    grid-column:2 ;
 }

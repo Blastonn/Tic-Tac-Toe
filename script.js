@@ -24,12 +24,10 @@ function createPlayer(nome, time){
 
 const controleDisplay = (function (){
     let player1,player2;
-    const definirJogadores = () =>{
-        const jogador1 = prompt("Digite o primeiro Jogador: ");
+    const definirJogadores = (jogador1,jogador2) =>{
         player1 = createPlayer(jogador1,"X");
-        const jogador2 = prompt("Digite o segundo Jogador: ");
         player2 = createPlayer(jogador2,"O");
-        return player1, player2;
+        return {player1, player2};
     }
     const getPlayers = () =>{
         return {player1, player2};
@@ -48,11 +46,10 @@ const controleJogo = (function () {
     let jogadorAtual;
     let players;
     const iniciarJogo = () =>{
-        controleDisplay.definirJogadores();
         players = controleDisplay.getPlayers();
         console.log("Players definidos:", players);
         jogadorAtual = players.player1;
-        return jogadorAtual;
+        return jogadorAtual,novoTurno();
     }
     const turnoJogo = () =>{
         const posicao = controleDisplay.definirPosicao();
@@ -111,9 +108,34 @@ const controleJogo = (function () {
     const getJogadorAtual = () =>{
         return {jogadorAtual};
     }
-    return {iniciarJogo,novoTurno};
+    return {iniciarJogo,novoTurno,getJogadorAtual};
 })();
 
+function controleTela() {
+    const game = controleJogo;
 
-// controleJogo.iniciarJogo();
-// controleJogo.novoTurno();
+
+    const formjogador = document.querySelector(".form-jogador");
+    const displayTurno = document.querySelector(".display-prin");
+    const submitButton = document.querySelector(".button");
+
+
+    formjogador.addEventListener("submit",(e) =>{
+        e.preventDefault();
+        const formData = new FormData(formjogador);
+
+        const player1 = formData.get("player1");
+        const player2 = formData.get("player2");
+        console.log(player1);
+        controleDisplay.definirJogadores(player1,player2);
+
+        displayTurno.textContent = `${player1} X ${player2}`;
+        submitButton.textContent = "REINICIAR";
+        game.iniciarJogo();
+
+        formjogador.reset();
+    });
+};
+
+controleTela();
+
