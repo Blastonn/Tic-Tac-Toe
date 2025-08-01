@@ -113,8 +113,6 @@ const controleJogo = (function () {
 })();
 
 const controleTela = (function () {
-    const score1 = 0;
-    const score2 = 0; 
     const turn = document.querySelector(".display-prin");
     const botaoReinicio = document.querySelector(".btn-reiniciar");
 
@@ -157,6 +155,7 @@ const controleTela = (function () {
     const handleBoard = (e) =>{
         const alvo = e.target;
         const index = e.target.dataset.index;
+        let score = 0;
         const time = controleJogo.getJogadorAtual().jogadorAtual.time;
      
         alvo.dataset.time = time;
@@ -165,14 +164,9 @@ const controleTela = (function () {
 
         if (resultado.venceu) {
           mostrarMensagem(`${resultado.vencedor.player} venceu!`);
-          if(resultado.vencedor.player === controleJogo.getJogadorAtual().jogadorAtual.player){
-            score1++;
-            console.log(score1);
-          }else{
-            console.log(score2);
-          }
+          score++;
           reiniciarVitoria();
-          return;
+          return ;
         }
       
         if (resultado.empate) {
