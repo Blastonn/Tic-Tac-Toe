@@ -63,43 +63,42 @@ const controleJogo = (function () {
         posicao = controleDisplay.definirPosicao(posicao);
         if (posicao < 0 || posicao >= gameboard.tamanhoArray() || gameboard.getIndice(posicao) !== "") {
             console.log("Digite uma posição válida e vazia.");
-            console.log(gameboard.mostrarPosicoes().posicao);
-            return;
+            return { venceu: false, empate: false, invalido: true };
         }
         gameboard.setIndice(posicao,getJogadorAtual().jogadorAtual.time);
         console.log(gameboard.mostrarPosicoes().posicao);
-        if (checarVitoria()) {
-            return true; 
-        }
-        trocarJogador();
-        console.log(`Proximo ${getJogadorAtual().jogadorAtual.player}`);
-        return false;
+        const resultado = checarVitoria();
+
+        if (!resultado.venceu && !resultado.empate) {
+            trocarJogador();
+          }
+        
+          return resultado;
     }
 
-    const checarVitoria = () =>{
+    const checarVitoria = () => {
         const pos = gameboard.mostrarPosicoes().posicao;
         const time = getJogadorAtual().jogadorAtual.time;
         const jogador = getJogadorAtual().jogadorAtual;
-        if(gameboard.tamanhoArrayPreenchido() === gameboard.tamanhoArray()){
-            controleTela.mostrarMensagem("Empate")
-            return true;
-        }
+      
         const combinacoes = [
-            [0,1,2], [3,4,5], [6,7,8], 
-            [0,3,6], [1,4,7], [2,5,8], 
-            [0,4,8], [2,4,6]           
-          ];
-          
-          for (const [a, b, c] of combinacoes) {
-            if (pos[a] === time && pos[b] === time && pos[c] === time) {
-              console.log(`${jogador.player} ganhou`);
-
-              controleTela.reiniciarVitoria();
-              return true;
-            }
+          [0,1,2], [3,4,5], [6,7,8], 
+          [0,3,6], [1,4,7], [2,5,8], 
+          [0,4,8], [2,4,6]
+        ];
+      
+        for (const [a, b, c] of combinacoes) {
+          if (pos[a] === time && pos[b] === time && pos[c] === time) {
+            return { venceu: true, empate: false, vencedor: jogador };
           }
-        return false;
-    }
+        }
+      
+        if (gameboard.tamanhoArrayPreenchido() === gameboard.tamanhoArray()) {
+          return { venceu: false, empate: true };
+        }
+      
+        return { venceu: false, empate: false };
+      };
     const trocarJogador = () =>{
         let players = controleDisplay.getPlayers();
         return jogadorAtual = jogadorAtual === players.player2 ? players.player1 :
@@ -114,6 +113,8 @@ const controleJogo = (function () {
 })();
 
 const controleTela = (function () {
+    const score1 = 0;
+    const score2 = 0; 
     const turn = document.querySelector(".display-prin");
     const botaoReinicio = document.querySelector(".btn-reiniciar");
 
@@ -157,11 +158,29 @@ const controleTela = (function () {
         const alvo = e.target;
         const index = e.target.dataset.index;
         const time = controleJogo.getJogadorAtual().jogadorAtual.time;
+     
         alvo.dataset.time = time;
         alvo.textContent = time;
-        controleJogo.turnoJogo(index);
-        updateScreen();
+        const resultado = controleJogo.turnoJogo(index);
 
+        if (resultado.venceu) {
+          mostrarMensagem(`${resultado.vencedor.player} venceu!`);
+          if(resultado.vencedor.player === controleJogo.getJogadorAtual().jogadorAtual.player){
+            score1++;
+            console.log(score1);
+          }else{
+            console.log(score2);
+          }
+          reiniciarVitoria();
+          return;
+        }
+      
+        if (resultado.empate) {
+          mostrarMensagem(`Empate!`);
+          reiniciarVitoria();
+          return;
+        }
+        updateScreen();
     }
     const handleReinicio = (e) =>{
         const botaoInicio = document.querySelector(".buttonS")
@@ -192,7 +211,6 @@ const controleTela = (function () {
           });
           gameboard.limparArray();
           controleJogo.resetarJogador();
-          updateScreen();
 
     }
 
