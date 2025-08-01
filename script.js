@@ -2,6 +2,9 @@ const gameboard = (function (){
     const posicao = Array(9).fill("");
     const getIndice = (indice) => posicao[indice];
     const setIndice = (indice, time) => posicao[indice] = time;
+    const limparArray = () =>{
+        return posicao.fill("");
+    }
     const mostrarPosicoes = () => {
         return {posicao};
     }
@@ -14,7 +17,7 @@ const gameboard = (function (){
     const tamanhoArrayPreenchido = () =>{
         return posicao.filter(el => el !== "").length;
     }
-    return {getIndice,setIndice,mostrarPosicoes,tamanhoArrayVazio,tamanhoArrayPreenchido,tamanhoArray};
+    return {getIndice,setIndice,mostrarPosicoes,tamanhoArrayVazio,tamanhoArrayPreenchido,tamanhoArray,limparArray};
 })();
 
 function createPlayer(nome, time){
@@ -51,6 +54,11 @@ const controleJogo = (function () {
         jogadorAtual = players.player1;
         return jogadorAtual;
     }
+
+    const resetarJogador = () =>{
+        jogadorAtual = players.player1;
+        return {jogadorAtual};
+    }
     const turnoJogo = (posicao) =>{
         posicao = controleDisplay.definirPosicao(posicao);
         if (posicao < 0 || posicao >= gameboard.tamanhoArray() || gameboard.getIndice(posicao) !== "") {
@@ -61,9 +69,9 @@ const controleJogo = (function () {
         gameboard.setIndice(posicao,getJogadorAtual().jogadorAtual.time);
         console.log(gameboard.mostrarPosicoes().posicao);
         if (checarVitoria()) {
-            encerrarJogo();
             return true; 
         }
+        trocarJogador();
         console.log(`Proximo ${getJogadorAtual().jogadorAtual.player}`);
         return false;
     }
@@ -73,7 +81,7 @@ const controleJogo = (function () {
         const time = getJogadorAtual().jogadorAtual.time;
         const jogador = getJogadorAtual().jogadorAtual;
         if(gameboard.tamanhoArrayPreenchido() === gameboard.tamanhoArray()){
-            console.log("Empate.")
+            controleTela.mostrarMensagem("Empate")
             return true;
         }
         const combinacoes = [
@@ -85,20 +93,13 @@ const controleJogo = (function () {
           for (const [a, b, c] of combinacoes) {
             if (pos[a] === time && pos[b] === time && pos[c] === time) {
               console.log(`${jogador.player} ganhou`);
+
+              controleTela.reiniciarVitoria();
               return true;
             }
           }
         return false;
     }
-//     const novoTurno = () =>{
-//        let turnos =  0;
-//        while(turnos <= gameboard.tamanhoArray()){
-//         if(turnoJogo()){
-//             break;
-//         }
-//         turnos++;   
-//     }
-// }
     const trocarJogador = () =>{
         let players = controleDisplay.getPlayers();
         return jogadorAtual = jogadorAtual === players.player2 ? players.player1 :
@@ -109,80 +110,101 @@ const controleJogo = (function () {
         return {jogadorAtual};
     }
 
-    const encerrarJogo = () =>{
-        const botoes = document.querySelectorAll(".tab");
-        botoes.forEach(btn => {
-          btn.disabled = true;
-        });
-    }
-
-    return {iniciarJogo,getJogadorAtual,trocarJogador,turnoJogo};
+    return {iniciarJogo,getJogadorAtual,trocarJogador,turnoJogo,resetarJogador};
 })();
 
 const controleTela = (function () {
-    const game = controleJogo;
+    const turn = document.querySelector(".display-prin");
+    const botaoReinicio = document.querySelector(".btn-reiniciar");
 
-    const formjogador = document.querySelector(".form-jogador");
-    const displayTurno = document.querySelector(".display-prin");
-    const submitButton = document.querySelector(".buttonS");
-    const tabuleiro = document.querySelectorAll(".cell");
+    document.addEventListener('DOMContentLoaded', () => {
+        const formulario = document.querySelector(".form-jogador");
+        botaoReinicio.disabled = true;
+        formulario.addEventListener("submit", handleSubmit);
+        botaoReinicio.addEventListener("click", handleReinicio);
+      });
 
-    const configurarListeners = () => {
-        formjogador.addEventListener("submit", handleSubmit);
-    };
-
-    const handleSubmit = (e) => {
+    const updateScreen = () =>{
+        const playerAtivo = controleJogo.getJogadorAtual().jogadorAtual.player;
+        turn.textContent = `Proximo ${playerAtivo}`;
+    }
+    const mostrarMensagem = (mensagem) =>{
+        turn.textContent = mensagem;
+    }
+    const criarBoard = () =>{
+        const tabuleiroCelulas = document.querySelectorAll(".cell");
+        tabuleiroCelulas.forEach((cell) =>{
+            const btn = document.createElement("button");
+            btn.classList.add("tab");
+            cell.appendChild(btn);
+        });
+    } 
+    const handleSubmit = (e) =>{
         e.preventDefault();
-        const formData = new FormData(formjogador);
+        const jogador1 = e.target.player1.value;
+        const jogador2 = e.target.player2.value;
+        controleDisplay.definirJogadores(jogador1, jogador2);
+        controleJogo.iniciarJogo();
+        updateScreen();
+        criarBoard();
+        tabuleiroCliques();
+        e.target.querySelector('button').disabled = true;
+        botaoReinicio.disabled = false;
+        e.target.player1.disabled = true;
+        e.target.player2.disabled = true;
+    }
+    const handleBoard = (e) =>{
+        const alvo = e.target;
+        const index = e.target.dataset.index;
+        const time = controleJogo.getJogadorAtual().jogadorAtual.time;
+        alvo.dataset.time = time;
+        alvo.textContent = time;
+        controleJogo.turnoJogo(index);
+        updateScreen();
 
-        const player1 = formData.get("player1");
-        const player2 = formData.get("player2");
+    }
+    const handleReinicio = (e) =>{
+        const botaoInicio = document.querySelector(".buttonS")
+        const botoes = document.querySelectorAll('.tab');
+        const formulario = document.querySelector(".form-jogador");
 
-        controleDisplay.definirJogadores(player1, player2);
-        displayTurno.textContent = `${player1} X ${player2}`;
-        submitButton.textContent = "REINICIAR";
-        submitButton.classList.add = "reinicio";
+        botoes.forEach((botao)=> {
+            botao.remove();
+          });
+          gameboard.limparArray();
+          controleJogo.resetarJogador();
+          updateScreen();
+        player1.disabled = false;
+        player2.disabled = false;
+        formulario.reset();
+        botaoInicio.disabled = false;
+        botaoReinicio.disabled = true;
+        turn.textContent = `Defina os jogadores`;
 
-        criarBotoesTabuleiro();
-        game.iniciarJogo();
 
-        formjogador.reset();
-    };
-
-    const criarBotoesTabuleiro = () => {
-        tabuleiro.forEach((cell, index) => {
-            cell.innerHTML = ""; 
-            const botao = document.createElement("button");
-            botao.classList.add("tab");
-            botao.dataset.indice = index;
-            botao.addEventListener("click", handleClickCelula);
-            cell.appendChild(botao);
-        });
-    };
-
-    const reiniciar = () =>{
-        const restartButton = document.querySelector(".reinicio");
-        restartButton.addEventListener("click", (){
-
-        });
     }
 
-    const handleClickCelula = (e) => {
-        const btn = e.target;
-        const indice = btn.dataset.indice;
-        const jogadorAtual = controleJogo.getJogadorAtual().jogadorAtual.player;
-        displayTurno.textContent = `Vez do ${jogadorAtual}`;
+    const reiniciarVitoria = () =>{
+        const botoes = document.querySelectorAll('.tab');
 
-        console.log(indice);
-        controleJogo.turnoJogo(indice);
-        btn.textContent = game.getJogadorAtual().jogadorAtual.time; 
-        controleJogo.trocarJogador();
+        botoes.forEach((botao)=> {
+            botao.textContent = "";
+          });
+          gameboard.limparArray();
+          controleJogo.resetarJogador();
+          updateScreen();
 
+    }
+
+    const tabuleiroCliques = () =>{
+        const botoes = document.querySelectorAll('.tab');
+
+        botoes.forEach((botao,index)=> {
+          botao.addEventListener('click', handleBoard);
+          botao.dataset.index = index;
+
+        });
     };
-
-    return {
-        iniciar: configurarListeners
-    };
+return {updateScreen,reiniciarVitoria,mostrarMensagem};
 })();
 
-controleTela.iniciar();
