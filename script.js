@@ -155,16 +155,15 @@ const controleTela = (function () {
     const handleBoard = (e) =>{
         const alvo = e.target;
         const index = e.target.dataset.index;
-        let score = 0;
         const time = controleJogo.getJogadorAtual().jogadorAtual.time;
      
         alvo.dataset.time = time;
         alvo.textContent = time;
+        alvo.disabled = true;
         const resultado = controleJogo.turnoJogo(index);
 
         if (resultado.venceu) {
           mostrarMensagem(`${resultado.vencedor.player} venceu!`);
-          score++;
           reiniciarVitoria();
           return ;
         }
@@ -202,6 +201,7 @@ const controleTela = (function () {
 
         botoes.forEach((botao)=> {
             botao.textContent = "";
+            botao.disabled = false;
           });
           gameboard.limparArray();
           controleJogo.resetarJogador();
@@ -214,7 +214,6 @@ const controleTela = (function () {
         botoes.forEach((botao,index)=> {
           botao.addEventListener('click', handleBoard);
           botao.dataset.index = index;
-
         });
     };
 return {updateScreen,reiniciarVitoria,mostrarMensagem};
